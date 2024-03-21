@@ -1,0 +1,46 @@
+import org.json.simple.JSONObject;
+
+// Método POST
+public JSONObject handlePostRequest(String requestBody) {
+    JSONObject response = new JSONObject();
+
+    // Extrair a string do corpo da requisição
+    JSONObject jsonRequest = new JSONObject(requestBody);
+    String texto = (String) jsonRequest.get("texto");
+
+    // Verificar se a string é um palíndromo
+    boolean isPalindrome = checkPalindrome(texto);
+    response.put("palindromo", isPalindrome);
+
+    // Contar a ocorrência de cada caractere na string
+    JSONObject characterOccurrences = countCharacterOccurrences(texto);
+    response.put("ocorrencias_caracteres", characterOccurrences);
+
+    return response;
+}
+
+// Verificar se a string é um palíndromo
+private boolean checkPalindrome(String texto) {
+    String reversedText = new StringBuilder(texto).reverse().toString();
+    return texto.equals(reversedText);
+}
+
+// Contar a ocorrência de cada caractere na string
+private JSONObject countCharacterOccurrences(String texto) {
+    JSONObject characterOccurrences = new JSONObject();
+
+    for (char c : texto.toCharArray()) {
+        int count = characterOccurrences.optInt(String.valueOf(c), 0);
+        characterOccurrences.put(String.valueOf(c), count + 1);
+    }
+
+    // Remover repetições de letras
+    JSONObject distinctCharacterOccurrences = new JSONObject();
+    for (char c : texto.toCharArray()) {
+        if (!distinctCharacterOccurrences.containsKey(String.valueOf(c))) {
+            distinctCharacterOccurrences.put(String.valueOf(c), characterOccurrences.get(String.valueOf(c)));
+        }
+    }
+
+    return distinctCharacterOccurrences;
+}
